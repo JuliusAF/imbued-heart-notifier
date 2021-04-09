@@ -11,6 +11,7 @@ import java.awt.*;
 public interface ImbuedHeartNotifierConfig extends Config
 {
 	@ConfigItem(
+		position = 0,
 		keyName = "highlightColor",
 		name = "Highlight Color",
 		description = "Color to highlight your imbued heart when it's ready to invigorate"
@@ -21,6 +22,7 @@ public interface ImbuedHeartNotifierConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 1,
 			keyName = "fillHeart",
 			name = "Fill Heart",
 			description = "Fill in the heart with the highlight color"
@@ -33,6 +35,7 @@ public interface ImbuedHeartNotifierConfig extends Config
 			max = 255
 	)
 	@ConfigItem(
+			position = 2,
 			keyName =  "fillHeartOpacity",
 			name = "Fill Opacity",
 			description = "The opacity of the highlight color when filling in the heart"
@@ -42,11 +45,22 @@ public interface ImbuedHeartNotifierConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 3,
 			keyName = "outlineHeart",
 			name = "Outline Heart",
 			description = "Outline the heart with the highlight color"
 	)
 	default boolean outlineHeart() {
+		return false;
+	}
+
+	@ConfigItem(
+			position = 4,
+			keyName = "enableNotifier",
+			name = "Enable Notifier",
+			description = "Enable a system notifier when your imbued heart is ready to be used"
+	)
+	default boolean enableNotifier() {
 		return false;
 	}
 }

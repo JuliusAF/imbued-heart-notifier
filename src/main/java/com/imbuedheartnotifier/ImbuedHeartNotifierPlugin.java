@@ -8,6 +8,7 @@ import net.runelite.api.ItemID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -39,6 +40,9 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 
 	@Inject
 	private OverlayManager overlayManager;
+
+	@Inject
+	private Notifier notifier;
 
 	private int invigorateTick;
 
@@ -73,6 +77,7 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 		{
 			invigorateTick = -1;
 			remainingDuration = 0;
+			notifyUser();
 		}
 
 		Matcher heartBusy = IMBUED_HEART_BUSY_MESSAGE.matcher(message);
@@ -95,6 +100,7 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 		if (invigorateTick > 0 && client.getTickCount() > invigorateTick + remainingDuration) {
 			invigorateTick = -1;
 			remainingDuration = 0;
+			notifyUser();
 		}
 	}
 
@@ -102,5 +108,11 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 	ImbuedHeartNotifierConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(ImbuedHeartNotifierConfig.class);
+	}
+
+	private void notifyUser() {
+		if (config.enableNotifier()) {
+			notifier.notify("Your imbued heart can be used again");
+		}
 	}
 }
