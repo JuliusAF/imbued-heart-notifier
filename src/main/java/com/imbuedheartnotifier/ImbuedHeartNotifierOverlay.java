@@ -44,10 +44,4 @@ public class ImbuedHeartNotifierOverlay extends WidgetItemOverlay {
             }
         }
     }
-
-    private Image getFillImage(Color color, int itemId, int qty)
-    {
-        final Color fillColor = ColorUtil.colorWithAlpha(color, 50);
-        return ImageUtil.fillImage(itemManager.getImage(itemId, qty, false), fillColor);
-    }
 }
