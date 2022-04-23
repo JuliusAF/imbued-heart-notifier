@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class ImbuedHeartNotifierPlugin extends Plugin
 {
 	private static final String IMBUED_HEART_READY_MESSAGE = "<col=ef1020>Your imbued heart has regained its magical power.</col>";
-	private static final Pattern IMBUED_HEART_BUSY_MESSAGE = Pattern.compile("The heart is still drained of its power. Judging by how it feels, it will be ready in around (\\d) \\.");
+	private static final Pattern IMBUED_HEART_BUSY_MESSAGE = Pattern.compile("The heart is still drained of its power. Judging by how it feels, it will be ready in around (\\d) minutes\\.");
 
 	private static final int invigorateDuration = 700;
 
@@ -89,7 +89,8 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if (event.getMenuOption().contains("Invigorate") && event.getId() == ItemID.IMBUED_HEART) {
+		if (event.getMenuOption().contains("Invigorate")) {
+			log.debug("Invigorate option clicked");
 			invigorateTick = client.getTickCount();
 			remainingDuration = invigorateDuration;
 		}
