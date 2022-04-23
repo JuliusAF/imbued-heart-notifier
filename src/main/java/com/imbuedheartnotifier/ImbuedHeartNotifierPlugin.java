@@ -4,6 +4,8 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.InventoryID;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
@@ -113,7 +115,11 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 
 	private void notifyUser() {
 		if (config.enableNotifier()) {
-			notifier.notify("Your imbued heart can be used again");
+			ItemContainer playerInventory = client.getItemContainer(InventoryID.INVENTORY);
+
+			if (playerInventory != null && playerInventory.contains( ItemID.IMBUED_HEART)) {
+				notifier.notify("Your imbued heart can be used again");
+			}
 		}
 	}
 }
