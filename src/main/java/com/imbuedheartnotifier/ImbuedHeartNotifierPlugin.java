@@ -1,7 +1,6 @@
 package com.imbuedheartnotifier;
 
 import com.google.inject.Provides;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
@@ -17,6 +16,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,12 +24,14 @@ import java.util.regex.Pattern;
 @PluginDescriptor(
 	name = "Imbued Heart Notifier"
 )
-public class ImbuedHeartNotifierPlugin extends Plugin
-{
-	private static final String IMBUED_HEART_READY_MESSAGE = "<col=ef1020>Your imbued heart has regained its magical power.</col>";
+public class ImbuedHeartNotifierPlugin extends Plugin {
+	public static final int SATURATED_HEART_ITEM_ID = 27641; // replace with ItemID.SATURATED_HEART with new version of runelite library
+
+	private static final Pattern IMBUED_HEART_READY_MESSAGE = Pattern.compile("<col=.{6}>Your (saturated|imbued) heart has regained its magical power.</col");
 	private static final Pattern IMBUED_HEART_BUSY_MESSAGE = Pattern.compile("The heart is still drained of its power. Judging by how it feels, it will be ready in around (\\d) minutes\\.");
 
 	private static final int invigorateDuration = 700;
+	private static final int saturatedDuration = 500;
 
 	@Inject
 	private Client client;
@@ -52,16 +54,14 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 
 
 	@Override
-	protected void startUp() throws Exception
-	{
+	protected void startUp() throws Exception {
 		invigorateTick = -1;
 		remainingDuration = 0;
 		overlayManager.add(overlay);
 	}
 
 	@Override
-	protected void shutDown() throws Exception
-	{
+	protected void shutDown() throws Exception {
 		overlayManager.remove(overlay);
 		invigorateTick = -1;
 		remainingDuration = 0;
@@ -75,8 +75,8 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 	public void onChatMessage(ChatMessage event) {
 		String message = event.getMessage();
 
-		if (message.equals(IMBUED_HEART_READY_MESSAGE))
-		{
+		Matcher heartReady = IMBUED_HEART_READY_MESSAGE.matcher(message);
+		if (heartReady.find()) {
 			invigorateTick = -1;
 			remainingDuration = 0;
 			notifyUser();
@@ -94,7 +94,12 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 		if (event.getMenuOption().contains("Invigorate")) {
 			log.debug("Invigorate option clicked");
 			invigorateTick = client.getTickCount();
-			remainingDuration = invigorateDuration;
+			ItemContainer playerInventory = client.getItemContainer(InventoryID.INVENTORY);
+			if (playerInventory != null && playerInventory.contains(SATURATED_HEART_ITEM_ID)) {
+				remainingDuration = saturatedDuration;
+			} else {
+				remainingDuration = invigorateDuration;
+			}
 		}
 	}
 
@@ -108,8 +113,7 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 	}
 
 	@Provides
-	ImbuedHeartNotifierConfig provideConfig(ConfigManager configManager)
-	{
+	ImbuedHeartNotifierConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(ImbuedHeartNotifierConfig.class);
 	}
 
@@ -117,7 +121,7 @@ public class ImbuedHeartNotifierPlugin extends Plugin
 		if (config.enableNotifier()) {
 			ItemContainer playerInventory = client.getItemContainer(InventoryID.INVENTORY);
 
-			if (playerInventory != null && playerInventory.contains( ItemID.IMBUED_HEART)) {
+			if (playerInventory != null && (playerInventory.contains(ItemID.IMBUED_HEART) || playerInventory.contains(SATURATED_HEART_ITEM_ID))) {
 				notifier.notify("Your imbued heart can be used again");
 			}
 		}
