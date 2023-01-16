@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class ImbuedHeartNotifierPlugin extends Plugin {
 	public static final int SATURATED_HEART_ITEM_ID = 27641; // replace with ItemID.SATURATED_HEART with new version of runelite library
 
-	private static final Pattern IMBUED_HEART_READY_MESSAGE = Pattern.compile("<col=.{6}>Your (saturated|imbued) heart has regained its magical power.</col");
+	private static final Pattern IMBUED_HEART_READY_MESSAGE = Pattern.compile("<col=.{6}>Your (saturated|imbued) heart has regained its magical power.</col>");
 	private static final Pattern IMBUED_HEART_BUSY_MESSAGE = Pattern.compile("The heart is still drained of its power. Judging by how it feels, it will be ready in around (\\d) minutes\\.");
 
 	private static final int invigorateDuration = 700;
